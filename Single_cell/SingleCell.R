@@ -101,7 +101,10 @@ pbmc <- FindClusters(object = pbmc, reduction.type = "pca", dims.use = 1:10,
 PrintFindClustersParams(object = pbmc)
 
 pbmc <- RunTSNE(object = pbmc, dims.use = 1:10, do.fast = TRUE)
+
+jpeg('/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/TSNE.jpg')
 TSNEPlot(object = pbmc)
+dev.off()
 
 save(pbmc, file = "/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/singleCell.Robj")
 
