@@ -38,11 +38,13 @@ sc3_export_results_xls(sceset)
 p_data <- pData(sceset)
 head(p_data[ , grep("sc3_", colnames(p_data))])
 
+png(width = 900, height = 700, '/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/PCA_sc3.png')
 plotPCA(
   sceset, 
   colour_by = "sc3_3_clusters", 
   size_by = "sc3_3_log2_outlier_score"
 )
+dev.off()
 
 
 f_data <- fData(sceset)
@@ -59,10 +61,10 @@ plotFeatureData(
 )
 
 
-sc3_plot_consensus(sceset, k = 3)
+sc3_plot_consensus(sceset, k = 5)
 
 sc3_plot_consensus(
-  sceset, k = 3, 
+  sceset, k = 7, 
   show_pdata = c(
     "cell_type1", 
     "log10_total_features",

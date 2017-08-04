@@ -1,5 +1,5 @@
-library(devtools)
-install_github("satijalab/seurat")
+#library(devtools)
+#install_github("satijalab/seurat")
 
 library(Seurat)
 library(dplyr)
@@ -13,7 +13,7 @@ pbmc.data <- Read10X(data.dir = "/Users/dmitrys/Desktop/DataProjects/Bioinformat
 # Initialize the Seurat object with the raw (non-normalized data).  Keep all
 # genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at
 # least 200 detected genes
-pbmc <- CreateSeuratObject(raw.data = pbmc.data, min.cells = 3, min.genes = 200, 
+pbmc <- CreateSeuratObject(raw.data = pbmc.data, min.cells = 5, min.genes = 200, 
                            project = "10X_PBMC")
 
 # The number of genes and UMIs (nGene and nUMI) are automatically calculated
@@ -38,12 +38,14 @@ VlnPlot(object = pbmc, features.plot = c("nGene", "nUMI", "percent.mito"), nCol 
 # object@data.info, PC scores etc.  Since there is a rare subset of cells
 # with an outlier level of high mitochondrial percentage and also low UMI
 # content, we filter these as well
+#png(width = 1200, height = 700, '/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/Outliers.png')
 par(mfrow = c(1, 2))
 GenePlot(object = pbmc, gene1 = "nUMI", gene2 = "percent.mito")
 GenePlot(object = pbmc, gene1 = "nUMI", gene2 = "nGene")
+#dev.off()
 
 
-# We filter out cells that have unique gene counts over 2,500 or less than
+# We filter out cells that have unique gene counts over 4,000 or less than
 # 200 Note that low.thresholds and high.thresholds are used to define a
 # 'gate' -Inf and Inf should be used if you don't want a lower or upper
 # threshold.
@@ -87,22 +89,28 @@ PCHeatmap(object = pbmc, pc.use = 1:12, cells.use = 500, do.balanced = TRUE,
 # PCElbowPlot() can be used to reduce computation time
 pbmc <- JackStraw(object = pbmc, num.replicate = 100, do.print = FALSE)
 
-JackStrawPlot(object = pbmc, PCs = 1:12)
-PCElbowPlot(object = pbmc)
+#png(width = 1200, height = 700, '/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/JackStrawPlot.png')
+JackStrawPlot(object = pbmc, PCs = 1:18)
+#dev.off()
 
+#png(width = 700, height = 500, '/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/PCElbowPlot.png')
+PCElbowPlot(object = pbmc)
+#dev.off()
 
 # save.SNN = T saves the SNN so that the clustering algorithm can be rerun
 # using the same graph but with a different resolution value (see docs for
 # full details)
-pbmc <- FindClusters(object = pbmc, reduction.type = "pca", dims.use = 1:10, 
-                     resolution = 0.6, print.output = 0, save.SNN = TRUE)
+pbmc <- FindClusters(force.recalc = TRUE, object = pbmc, reduction.type = "pca", dims.use = 1:15, 
+                     resolution = 0.1, print.output = 0, save.SNN = TRUE)
 PrintFindClustersParams(object = pbmc)
 
-pbmc <- RunTSNE(object = pbmc, dims.use = 1:10, do.fast = TRUE)
+pbmc <- RunTSNE(object = pbmc, dims.use = 1:15, do.fast = TRUE)
 
-jpeg('/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/TSNE.jpg')
+#jpeg('/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/TSNE.jpg')
 TSNEPlot(object = pbmc)
-dev.off()
+#dev.off()
+
+
 
 save(pbmc, file = "/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/singleCell.Robj")
 
@@ -123,6 +131,7 @@ pbmc.markers <- FindAllMarkers(object = pbmc, only.pos = TRUE, min.pct = 0.25,
                                thresh.use = 0.25)
 pbmc.markers %>% group_by(cluster) %>% top_n(2, avg_diff)
 
+#write.table(pbmc.markers, file = "/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/MARKERS.csv")
 
 cluster1.markers <- FindMarkers(object = pbmc, ident.1 = 0, thresh.use = 0.25, 
                                 test.use = "roc", only.pos = TRUE)
@@ -132,9 +141,11 @@ VlnPlot(object = pbmc, features.plot = c("MS4A1", "CD79A"))
 # you can plot raw UMI counts as well
 VlnPlot(object = pbmc, features.plot = c("NKG7", "PF4"), use.raw = TRUE, y.log = TRUE)
 
+## 0 - CD4 T cells, 1 - LYZ, MS4A7 Monocytes, 2 - B cells, 
+## 3 - CD8 T cells, 4 - FCGR3A Monocytes, 5 - NA
 
 FeaturePlot(object = pbmc, features.plot = c("MS4A1", "GNLY", "CD3E", "CD14", 
-                                             "FCER1A", "FCGR3A", "LYZ", "PPBP", "CD8A"), cols.use = c("grey", "blue"), 
+                                             "FCER1A", "FCGR3A"), cols.use = c("grey", "blue"), 
             reduction.use = "tsne")
 
 
@@ -145,9 +156,9 @@ DoHeatmap(object = pbmc, genes.use = top10$gene, order.by.ident = TRUE, slim.col
           remove.key = TRUE)
 
 
-current.cluster.ids <- c(0, 1, 2, 3, 4, 5, 6, 7)
-new.cluster.ids <- c("CD4 T cells", "CD14+ Monocytes", "B cells", "CD8 T cells", 
-                     "FCGR3A+ Monocytes", "NK cells", "Dendritic cells", "Megakaryocytes")
+current.cluster.ids <- c(0, 1, 2, 3, 4, 5)
+new.cluster.ids <- c("CD4 T cells", "LYZ, MS4A7 Monocytes", "B cells", "CD8 T cells", 
+                     "FCGR3A Monocytes", "NA")
 pbmc@ident <- plyr::mapvalues(x = pbmc@ident, from = current.cluster.ids, to = new.cluster.ids)
 TSNEPlot(object = pbmc, do.label = TRUE, pt.size = 0.5)
 
