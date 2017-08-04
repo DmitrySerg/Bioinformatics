@@ -10,8 +10,6 @@ file_location <- "/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell
 
 pbmc.data <- Read10X(data.dir = "/Users/dmitrys/Desktop/DataProjects/Bioinformatics/Single_cell/GRCh38/")
 
-
-
 # Initialize the Seurat object with the raw (non-normalized data).  Keep all
 # genes expressed in >= 3 cells (~0.1% of the data). Keep all cells with at
 # least 200 detected genes
@@ -152,5 +150,10 @@ new.cluster.ids <- c("CD4 T cells", "CD14+ Monocytes", "B cells", "CD8 T cells",
                      "FCGR3A+ Monocytes", "NK cells", "Dendritic cells", "Megakaryocytes")
 pbmc@ident <- plyr::mapvalues(x = pbmc@ident, from = current.cluster.ids, to = new.cluster.ids)
 TSNEPlot(object = pbmc, do.label = TRUE, pt.size = 0.5)
+
+
+
+
+
 
 
