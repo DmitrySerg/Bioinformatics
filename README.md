@@ -8,7 +8,7 @@ Single Cell Project
 
 С кластеризацией данных успешно справился Shared Nearest Neighbor (SNN), а с красивой визуализацией помог tSNE. 
 
-![]('Pictures/tSNE annotated.png')
+![](https://github.com/DmitrySerg/Bioinformatics/blob/master/Single_cell/Pictures/tSNE%20annotated.png)
 
 Наконец, получив метки классов после интерпретации кластеров, были построены классификаторы, способные по сырым данным экспресии (без фильтрации, предобработки и PCA) предсказывать метку класса.
 
