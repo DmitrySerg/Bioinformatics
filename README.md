@@ -20,9 +20,13 @@
 
 ![](https://github.com/DmitrySerg/Bioinformatics/blob/master/Single_cell/Pictures/quality.png)
 
+## Feature importance
+
+По логиту заодно можно было посмотреть на "важность" экспресии конкретных генов при принятии решения об отнесении клетки к тому или иному кластеру.
+
 ![](https://github.com/DmitrySerg/Bioinformatics/blob/master/Single_cell/Pictures/feature_importance.png)
 
-## Feature importance
+
 
 Немного хороших ссылок, которые мы использовали
 https://bioconductor.org/packages/devel/bioc/vignettes/SC3/inst/doc/my-vignette.html
